@@ -19,6 +19,9 @@
        <param name="pointcloud_frame_id" type="string" value="map" />
        <param name="camera_frame_id" type="string" value="camera_link" />
        <param name="min_num_kf_in_map" type="int" value="5" />
+       
+       <!-- AE experiment -->
+       <param name="target_frame_id" type="string" value="base_link" />
 
        <!-- ORB parameters -->
        <param name="/ORBextractor/nFeatures" type="int" value="1000" />

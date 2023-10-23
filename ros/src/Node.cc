@@ -154,6 +154,13 @@ void Node::PublishPositionAsTransform (cv::Mat position) {
   // Make transform from camera frame to target frame
   tf2::Transform tf_map2target = TransformToTarget(tf_transform, camera_frame_id_param_, target_frame_id_param_);
 
+  // AE: forcing the Z component of the position to be 0 because I need it for base_link of a ground based robot, so it should be at 0, but 
+  // AE: by default orb-slam2 comes up with all sorts of weird values and puts my map either above or below the acctual robot floor plane.
+  tf2::Vector3 ae_current_pos_vec = tf_map2target.getOrigin();
+  ae_current_pos_vec.setZ(0.0);
+  tf_map2target.setOrigin(ae_current_pos_vec);
+  //# AE: manipulation done
+  
   // Make message
   tf2::Stamped<tf2::Transform> tf_map2target_stamped;
   tf_map2target_stamped = tf2::Stamped<tf2::Transform>(tf_map2target, current_frame_time_, map_frame_id_param_);
@@ -162,6 +169,7 @@ void Node::PublishPositionAsTransform (cv::Mat position) {
   // Broadcast tf
   static tf2_ros::TransformBroadcaster tf_broadcaster;
   tf_broadcaster.sendTransform(msg);
+  //ROS_INFO_STREAM("AE debug: " << msg);
 }
 
 void Node::PublishPositionAsPoseStamped (cv::Mat position) {
@@ -169,6 +177,13 @@ void Node::PublishPositionAsPoseStamped (cv::Mat position) {
 
   // Make transform from camera frame to target frame
   tf2::Transform tf_position_target = TransformToTarget(tf_position, camera_frame_id_param_, target_frame_id_param_);
+
+  // AE: forcing the Z component of the position to be 0 because I need it for base_link of a ground based robot, so it should be at 0, but 
+  // AE: by default orb-slam2 comes up with all sorts of weird values and puts my map either above or below the acctual robot floor plane.
+  tf2::Vector3 ae_current_pos_vec = tf_position_target.getOrigin();
+  ae_current_pos_vec.setZ(0.0);
+  tf_position_target.setOrigin(ae_current_pos_vec);
+  //# AE: manipulation done
   
   // Make message
   tf2::Stamped<tf2::Transform> tf_position_target_stamped;
@@ -176,6 +191,7 @@ void Node::PublishPositionAsPoseStamped (cv::Mat position) {
   geometry_msgs::PoseStamped pose_msg;
   tf2::toMsg(tf_position_target_stamped, pose_msg);
   pose_publisher_.publish(pose_msg);
+  //ROS_INFO_STREAM("AE debug2: " << pose_msg);
 }
 
 void Node::PublishGBAStatus (bool gba_status) {
